@@ -51,21 +51,26 @@ function ley5Screen(){
   ellipse(mouseX,mouseY,20,20);
 }
 
+function keyTyped(_key){
+  if(_key == ley1key && !locked){
+    ley1Screen();
+  } else if(_key == ley2key && !locked){
+    ley2Screen();
+  } else if(_key == ley3key && !locked){
+    ley3Screen();
+  } else if(_key == ley4key && !locked){
+    ley4Screen();
+  } else if(_key == ley5key && !locked){
+    ley5Screen();
+  }
+  return false;
+}
 
 function draw() {
-  if (keyPressed && keyIsDown) {
-    if(key == ley1key && !locked){
-      ley1Screen();
-    } else if(key == ley2key && !locked){
-      ley2Screen();
-    } else if(key == ley3key && !locked){
-      ley3Screen();
-    } else if(key == ley4key && !locked){
-      ley4Screen();
-    } else if(key == ley5key && !locked){
-      ley5Screen();
-    }
-  } else {
+  if (keyIsPressed) {
+    keyTyped(key);  
+  } 
+  else {
     mainScreen();
   }
 
