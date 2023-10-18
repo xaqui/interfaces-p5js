@@ -7,34 +7,47 @@ const ley4key = 'f';
 const ley5key = 'g';
 let currentScreen = '';
 let locked;
-let countdown = 45;
-
+let countdown = 10;
+let lastUpdateTime = 0;
 
 function setup() {
   locked = false;
   createCanvas(canvasWidth, canvasHeight);
   mainScreen();
-  //focus(); //Funcion para obtener el foco y que funcione sin tener que clicar el lienzo
+  focus(); //Funcion para obtener el foco y que funcione sin tener que clicar el lienzo
 }
 
 function mainScreen() {
   currentScreen = 'main';
   locked = false;
-  countdown = 45;
+  countdown = 10;
+  lastUpdateTime = millis();
+ 
   frameRate(60);
   background(220);
   textAlign(CENTER);
+  textSize(32);
+  textStyle(BOLD);
+  text("LEYES DE UX", canvasWidth / 2, (canvasHeight / 2) -50);
+  textSize(12);
+  textStyle(NORMAL);
   fill(0);
-  text("ODIO P5JS", canvasWidth / 2, canvasHeight / 2);
-}
+  textAlign(CENTER);
+  text("Pulsa 'a' para Ley de Proximidad", canvasWidth / 2, canvasHeight / 2);
+  text("Pulsa 's' para Ley de la Semejanza", canvasWidth / 2,15+ canvasHeight / 2);
+  text("Pulsa 'd' para Ley de Región Común", canvasWidth / 2,30+ canvasHeight / 2);
+  text("Pulsa 'f' para Ley de Parkinson", canvasWidth / 2,45+ canvasHeight / 2);
+  text("Pulsa 'g' para Ley de Miller", canvasWidth / 2,60+ canvasHeight / 2);
 
+}
+// Ley de Proximidad
 function ley1Screen() {
   locked = true;
   currentScreen = '1';
-  background(255);
+  background("#EEE5E9");
   let numCircles = 3;
   let spacing = (400 / 8) - 4;
-  fill(128);
+  fill("#2B303A");
   noStroke();
   ellipseMode(CENTER);
   // Circulos 1
@@ -69,11 +82,11 @@ function ley1Screen() {
   textAlign(RIGHT);
   text("Esto se percibe como\n grupos separados.", 350, 270);
 }
-
+// Ley de la Semejanza
 function ley2Screen() {
   locked = true;
   currentScreen = '2';
-  background(220);
+  background("#EEE5E9");
   ellipseMode(RADIUS);
   let numCols = 5;
   let numRows = 5;
@@ -81,7 +94,7 @@ function ley2Screen() {
   let circleRadius = circleSpacing / 2 - 4;
 
   // Circulos 1
-  let firstSetColor = color(200);
+  let firstSetColor = color("#D64933");
   fill(firstSetColor);
   noStroke();
 
@@ -117,10 +130,11 @@ function ley2Screen() {
   textAlign(RIGHT);
   text("Esto se percibe\ncomo otro.", 380, 180);
 }
+// Ley de Region Comun
 function ley3Screen() {
   locked = true;
   currentScreen = '3';
-  background(220);
+  background("#EEE5E9");
   ellipseMode(CORNER);
   noStroke();
   let spacing = canvasWidth / 7;
@@ -159,23 +173,34 @@ function ley3Screen() {
   textAlign(LEFT);
   text("Esto se percibe\ncomo un grupo.", 30, 270);
 }
+// Ley de Parkinson
 function ley4Screen() {
   locked = true;
   currentScreen = '4';
-  background(220);
+  background("#EEE5E9");
   fill(0);
   textStyle(BOLD);
   textSize(42);
   textAlign(CENTER);
-  background(220);
   noStroke();
-  frameRate(1); // Set the frame rate to 1 frame per second
+
+  let currentTime = millis();
+  let elapsedSeconds = floor((currentTime - lastUpdateTime) / 1000);
+
+  if (elapsedSeconds >= 1) {
+    countdown -= elapsedSeconds;
+    lastUpdateTime = currentTime;
+  }
+
+  if (countdown < 0) {
+    countdown = 0;
+  }
   let minutes = floor(countdown / 60);
   let seconds = countdown % 60;
+
   let timeText = nf(minutes, 2) + ":" + nf(seconds, 2);
   text(timeText, canvasWidth / 2, canvasHeight / 2);
   if (countdown > 0) {
-    countdown--;
     let buttonWidth = 200;
     let buttonHeight = 40;
     let buttonX = 200 - buttonWidth / 2;
@@ -195,33 +220,90 @@ function ley4Screen() {
     noStroke();
     textSize(24);
     textAlign(CENTER);
-    text("PUNTUAR", buttonX + (buttonWidth / 2), buttonY + (buttonHeight / 2));
+    text("PUNTUAR", buttonX + (buttonWidth / 2), buttonY + (buttonHeight / 2)+7);
   } else {
     textSize(16);
-    text("¡Se acabo el tiempo!", width / 2, height / 2 + 50);
-    text("La tarea ha sido puntuada con un 10.", width / 2, height / 2 + 70);
+    text("¡Se acabo el tiempo!", canvasWidth / 2, canvasHeight / 2 + 50);
+    text("La tarea ha sido puntuada con un 10.", canvasWidth / 2, canvasHeight / 2 + 70);
   }
   fill(0);
   textSize(16);
   text("LEY DE PARKINSON", 200, 70);
   textStyle(NORMAL);
 
-  textAlign(CENTER);
   text("Tiempo restante para puntuar esta tarea:", 200, 140);
   textSize(12);
   text("Dice que el trabajo se expande para llenar el tiempo disponible.\nSi das mucho tiempo para una tarea, la gente lo usará,\nasí que se deben establecer plazos para mantenerse eficiente.", 200, 330);
 
 
 }
+// Ley de Miller
 function ley5Screen() {
   locked = true;
   currentScreen = '5';
-  background(220);
-  fill(220, 220, 200);
-  ellipse(mouseX, mouseY, 20, 20);
+  let filas = 7;
+  let columnas = 7;
+  let circleDiameter;
+  let padding;
+  let xOffset;
+  let yOffset;
+  let coloredCircles = [];
+  background("#EEE5E9");
+  circleDiameter = canvasWidth / 3 / columnas;
+  padding = circleDiameter -5;
+  xOffset = (canvasWidth - (circleDiameter * columnas + padding * (columnas - 1))) / 2;
+  yOffset = (canvasHeight - (circleDiameter * filas + padding * (filas - 1))) / 2;
+
+  noStroke();
+
+  // Crear circulos
+  for (let i = 0; i < filas; i++) {
+    for (let j = 0; j < columnas; j++) {
+      let x = xOffset + j * (circleDiameter + padding);
+      let y = yOffset + i * (circleDiameter + padding);
+
+      fill(200); // Light grey
+      ellipse(x, y, circleDiameter);
+      coloredCircles.push({ x, y });
+    }
+  }
+
+  // Colorear 7 circulos random
+  let primaryColors = ['#268bd2', '#d33682', '#859900', '#b58900', '#cb4b16', '#2aa198', '#839496'];
+  let circle = coloredCircles.splice(3, 1)[0];
+  fill(primaryColors[0]);
+  ellipse(circle.x, circle.y, circleDiameter);
+  circle = coloredCircles.splice(4, 1)[0];
+  fill(primaryColors[1]);
+  ellipse(circle.x, circle.y, circleDiameter);
+  circle = coloredCircles.splice(10, 1)[0];
+  fill(primaryColors[2]);
+  ellipse(circle.x, circle.y, circleDiameter);
+  circle = coloredCircles.splice(17, 1)[0];
+  fill(primaryColors[3]);
+  ellipse(circle.x, circle.y, circleDiameter);
+  circle = coloredCircles.splice(22, 1)[0];
+  fill(primaryColors[4]);
+  ellipse(circle.x, circle.y, circleDiameter);
+  circle = coloredCircles.splice(13, 1)[0];
+  fill(primaryColors[5]);
+  ellipse(circle.x, circle.y, circleDiameter);
+  circle = coloredCircles.splice(29, 1)[0];
+  fill(primaryColors[6]);
+  ellipse(circle.x, circle.y, circleDiameter);
+  noStroke();
+  fill(0);
+  textStyle(BOLD);
+  textSize(16);
+  textAlign(CENTER);
+  text("LEY DE MILLER", 200, 70);
+  textStyle(NORMAL);
+  textSize(12);
+  text("Sugiere que la cantidad ideal de información que podemos retener\n en la memoria a corto plazo es de alrededor de 7 ± 2 elementos. \nSe debe diseñar con esto en mente \npara evitar sobrecargar a las personas.", 200, 330);
+
 }
 
-function keyIsDown(_key) {
+function teclaPulsada(_key) {
   if ((_key == ley1key && !locked) || currentScreen == '1') {
     ley1Screen();
   } else if ((_key == ley2key && !locked) || currentScreen == '2') {
@@ -238,10 +320,9 @@ function keyIsDown(_key) {
 
 function draw() {
   if (keyIsPressed) {
-    keyIsDown(key);
+    teclaPulsada(key);
   }
   else {
     mainScreen();
   }
-
 }
